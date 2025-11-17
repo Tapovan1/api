@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model Attendance {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  studentId Int
+  status    String
+  standard  Int?  
+  class     String?
+  reason    String?
+
+  @@unique([date, studentId])
+}
+
+model Holiday {
+  id     Int      @id @default(autoincrement())
+  date   DateTime @unique
+  reason String
+}
