@@ -202,7 +202,7 @@ app.get("/api/holidays", async (c) => {
 });
 
 // Add a holiday
-app.post("/api/add/holidays", async (c) => {
+app.post("/api/holidays/add", async (c) => {
   const prisma = c.get('prisma');
   try {
     const body = await c.req.json();
@@ -227,7 +227,7 @@ app.post("/api/add/holidays", async (c) => {
 });
 
 // Delete a holiday
-app.delete("/api/delete/holidays/:id", async (c) => {
+app.delete("/api/holidays/delete/:id", async (c) => {
   const prisma = c.get('prisma');
   try {
     const id = Number(c.req.param("id"));
