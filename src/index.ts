@@ -172,6 +172,83 @@ app.put('/api/updateReason', withPrisma, async (c) => {
   return c.json({ message: 'Reason updated successfully', update }, 200);
 })
 
+//fetch holidays
+
+
+app.get("/api/holidays", async (c) => {
+  const prisma = c.get('prisma');
+  try {
+    const year = Number.parseInt(
+      c.req.query("year") || new Date().getFullYear().toString()
+    );
+
+    const startDate = new Date(year, 0, 1);
+    const endDate = new Date(year, 11, 31);
+
+    const holidays = await prisma.holiday.findMany({
+      where: {
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    });
+
+    return c.json(holidays);
+  } catch (error) {
+    console.error("Error fetching holidays:", error);
+    return c.json({ error: "Failed to fetch holidays" }, 500);
+  }
+});
+
+// Add a holiday
+app.post("/api/add/holidays", async (c) => {
+  const prisma = c.get('prisma');
+  try {
+    const body = await c.req.json();
+    const { date, reason } = body;
+
+    if (!date || !reason) {
+      return c.json({ error: "Date and reason are required" }, 400);
+    }
+
+    const holiday = await prisma.holiday.create({
+      data: {
+        date: new Date(date),
+        reason,
+      },
+    });
+
+    return c.json(holiday, 201);
+  } catch (error) {
+    console.error("Error adding holiday:", error);
+    return c.json({ error: "Failed to add holiday" }, 500);
+  }
+});
+
+// Delete a holiday
+app.delete("/api/delete/holidays/:id", async (c) => {
+  const prisma = c.get('prisma');
+  try {
+    const id = Number(c.req.param("id"));
+    if (isNaN(id)) {
+      return c.json({ error: "Invalid holiday ID" }, 400);
+    }
+    
+    const holiday = await prisma.holiday.delete({
+      where: { id },
+    });
+
+    return c.json({ message: "Holiday deleted successfully", holiday }, 200);
+  } catch (error) {
+    console.error("Error deleting holiday:", error);
+    return c.json({ error: "Failed to delete holiday" }, 500);
+  }
+});
+
+export default app;
+
+
 
 serve({
   fetch: app.fetch,
