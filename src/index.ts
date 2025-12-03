@@ -175,12 +175,14 @@ app.put('/api/updateReason', withPrisma, async (c) => {
 //fetch holidays
 
 
-app.get("/api/holidays", async (c) => {
+app.get("/api/holidays", withPrisma,async (c) => {
   const prisma = c.get('prisma');
-  try {
+ 
     const year = Number.parseInt(
       c.req.query("year") || new Date().getFullYear().toString()
     );
+  
+    
 
     const startDate = new Date(year, 0, 1);
     const endDate = new Date(year, 11, 31);
@@ -193,12 +195,12 @@ app.get("/api/holidays", async (c) => {
         },
       },
     });
+ 
+    
 
-    return c.json(holidays);
-  } catch (error) {
-    console.error("Error fetching holidays:", error);
-    return c.json({ error: "Failed to fetch holidays" }, 500);
-  }
+    return c.json({ message: "Holidays fetched successfully", holidays }, 200);
+  
+    
 });
 
 // Add a holiday
